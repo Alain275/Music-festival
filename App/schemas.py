@@ -25,8 +25,9 @@ class Artist(ArtistBase):
     id: int = Field(..., example=1)
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True  # Instead of orm_mode
+        populate_by_name = True  # Instead of allow_population_by_field_name
+
 
 # Stage schemas
 class StageBase(BaseModel):
@@ -46,8 +47,9 @@ class Stage(StageBase):
     id: int = Field(..., example=1)
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
+        populate_by_name = True
+
 
 # Schedule schemas
 class ScheduleBase(BaseModel):
@@ -69,8 +71,9 @@ class Schedule(ScheduleBase):
     id: int = Field(..., example=1)
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
+        populate_by_name = True
+
 
 # Ticket schemas
 class TicketBase(BaseModel):
@@ -90,8 +93,9 @@ class Ticket(TicketBase):
     id: int = Field(..., example=1)
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
+        populate_by_name = True
+
 
 # User schemas
 class UserBase(BaseModel):
@@ -112,8 +116,9 @@ class User(UserBase):
     is_admin: bool = Field(..., example=False)
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
+        populate_by_name = True
+
 
 
 class RatingBase(BaseModel):
@@ -123,7 +128,8 @@ class RatingBase(BaseModel):
     feedback: Optional[str] = None  # Include feedback in the base schema
 
     class Config:
-        orm_mode = True
+   
+        from_attributes = True
 
 class RatingCreate(BaseModel):
     artist_id: int
@@ -210,7 +216,8 @@ class FestivalNewsBase(BaseModel):
     content: str
 
     class Config:
-        orm_mode = True
+   
+        from_attributes = True
 
 class FestivalNewsCreate(FestivalNewsBase):
     pass

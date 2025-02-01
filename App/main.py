@@ -34,8 +34,10 @@ PAYPAL_API_URL = "https://api.sandbox.paypal.com/v2/checkout/orders"
 
 import requests
 from fastapi import FastAPI, HTTPException
+import warnings
 
 app = FastAPI()
+warnings.filterwarnings("ignore", category=UserWarning, message="Valid config keys have changed in V2")
 
 # Hardcoded PayPal Credentials (for testing only)
 PAYPAL_CLIENT_ID = "AaAYMuTPFNWE7PdlmTNFY7KgvX-uWkyZiFQnXSbzyyYqE-Ee-dMM_Jz_O3MQpqDuF81FqkAtV8xMcwYs"
