@@ -97,12 +97,66 @@ def delete_schedule(db: Session, schedule_id: int):
         db.commit()
     return db_schedule
 
-# Ticket functions
+# # Ticket functions
+# def get_ticket(db: Session, ticket_id: int):
+#     return db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+
+# def get_tickets(db: Session, skip: int = 0, limit: int = 100):
+#     return db.query(models.Ticket).offset(skip).limit(limit).all()
+
+# def create_ticket(db: Session, ticket: schemas.TicketCreate):
+#     db_ticket = models.Ticket(**ticket.dict())
+#     db.add(db_ticket)
+#     db.commit()
+#     db.refresh(db_ticket)
+#     return db_ticket
+
+# def update_ticket(db: Session, ticket_id: int, ticket: schemas.TicketUpdate):
+#     db_ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+#     if db_ticket:
+#         update_data = ticket.dict(exclude_unset=True)
+#         for key, value in update_data.items():
+#             setattr(db_ticket, key, value)
+#         db.commit()
+#         db.refresh(db_ticket)
+#     return db_ticket
+
+# def delete_ticket(db: Session, ticket_id: int):
+#     db_ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+#     if db_ticket:
+#         db.delete(db_ticket)
+#         db.commit()
+#     return db_ticket
+def get_tickets(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Ticket).offset(skip).limit(limit).all()
+
 def get_ticket(db: Session, ticket_id: int):
     return db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
 
-def get_tickets(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Ticket).offset(skip).limit(limit).all()
+def update_ticket(db: Session, ticket_id: int, ticket_update: schemas.TicketUpdate):
+    ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+    if not ticket:
+        return None  # Ticket not found
+
+    for key, value in ticket_update.dict(exclude_unset=True).items():
+        setattr(ticket, key, value)
+
+    db.commit()
+    db.refresh(ticket)
+    return ticket
+
+
+def delete_ticket(db: Session, ticket_id: int):
+    ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+    if not ticket:
+        return None  # Ticket not found
+
+    db.delete(ticket)
+    db.commit()
+    return ticket  # Return deleted ticket info (optional)
+
+
+
 
 def create_ticket(db: Session, ticket: schemas.TicketCreate):
     db_ticket = models.Ticket(**ticket.dict())
@@ -111,22 +165,28 @@ def create_ticket(db: Session, ticket: schemas.TicketCreate):
     db.refresh(db_ticket)
     return db_ticket
 
-def update_ticket(db: Session, ticket_id: int, ticket: schemas.TicketUpdate):
-    db_ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
-    if db_ticket:
-        update_data = ticket.dict(exclude_unset=True)
-        for key, value in update_data.items():
-            setattr(db_ticket, key, value)
-        db.commit()
-        db.refresh(db_ticket)
-    return db_ticket
+def purchase_ticket(db: Session, order: schemas.OrderCreate):
+    ticket = db.query(models.Ticket).filter(models.Ticket.id == order.ticket_id).first()
+    if not ticket or ticket.total_tickets < order.quantity:
+        return None  # Not enough tickets available
 
-def delete_ticket(db: Session, ticket_id: int):
-    db_ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
-    if db_ticket:
-        db.delete(db_ticket)
-        db.commit()
-    return db_ticket
+    total_price = ticket.price * order.quantity
+    db_order = models.Order(
+        user_id=order.user_id,
+        ticket_id=order.ticket_id,
+        quantity=order.quantity,
+        total_price=total_price,
+        status="pending"
+    )
+    db.add(db_order)
+    ticket.total_tickets -= order.quantity  # Reduce available tickets
+    db.commit()
+    db.refresh(db_order)
+    return db_order
+
+def get_orders_by_user(db: Session, user_id: int):
+    return db.query(models.Order).filter(models.Order.user_id == user_id).all()
+
 
 
 from passlib.context import CryptContext

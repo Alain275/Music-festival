@@ -23,7 +23,9 @@ def read_ticket(ticket_id: int, db: Session = Depends(database.get_db)):
 
 @router.put("/tickets/{ticket_id}", response_model=schemas.Ticket)
 def update_ticket(ticket_id: int, ticket: schemas.TicketUpdate, db: Session = Depends(database.get_db)):
-    db_ticket = crud.update_ticket(db, ticket_id=ticket_id, ticket=ticket)
+    # db_ticket = crud.update_ticket(db, ticket_id=ticket_id, ticket=ticket)
+    db_ticket = crud.update_ticket(db, ticket_id=ticket_id, ticket_update=ticket)
+
     if db_ticket is None:
         raise HTTPException(status_code=404, detail="Ticket not found")
     return db_ticket
@@ -31,6 +33,7 @@ def update_ticket(ticket_id: int, ticket: schemas.TicketUpdate, db: Session = De
 @router.delete("/tickets/{ticket_id}", response_model=schemas.Ticket)
 def delete_ticket(ticket_id: int, db: Session = Depends(database.get_db)):
     db_ticket = crud.delete_ticket(db, ticket_id=ticket_id)
+    
     if db_ticket is None:
         raise HTTPException(status_code=404, detail="Ticket not found")
     return db_ticket

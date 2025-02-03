@@ -75,27 +75,66 @@ class Schedule(ScheduleBase):
         populate_by_name = True
 
 
-# Ticket schemas
+# # Ticket schemas
+# class TicketBase(BaseModel):
+#     type: str = Field(..., example="VIP", min_length=1, max_length=50)
+#     price: float = Field(..., example=150.00, ge=0)
+#     quantity: int = Field(..., example=100, ge=0)
+
+# class TicketCreate(TicketBase):
+#     pass
+
+# class TicketUpdate(BaseModel):
+#     type: Optional[str] = Field(None, example="Regular", min_length=1, max_length=50)
+#     price: Optional[float] = Field(None, example=75.00, ge=0)
+#     quantity: Optional[int] = Field(None, example=500, ge=0)
+
+# class Ticket(TicketBase):
+#     id: int = Field(..., example=1)
+
+#     class Config:
+#         from_attributes = True
+#         populate_by_name = True
+
+
 class TicketBase(BaseModel):
     type: str = Field(..., example="VIP", min_length=1, max_length=50)
-    price: float = Field(..., example=150.00, ge=0)
-    quantity: int = Field(..., example=100, ge=0)
+    price: float
+    total_tickets: int
 
 class TicketCreate(TicketBase):
     pass
 
-class TicketUpdate(BaseModel):
-    type: Optional[str] = Field(None, example="Regular", min_length=1, max_length=50)
-    price: Optional[float] = Field(None, example=75.00, ge=0)
-    quantity: Optional[int] = Field(None, example=500, ge=0)
+class TicketUpdate(TicketBase):
+    type: str = Field(None, example="VIP", min_length=1, max_length=50)  # Optional field
+    price: float = None  # Optional field
+    total_tickets: int = None  # Optional field
 
 class Ticket(TicketBase):
-    id: int = Field(..., example=1)
+    id: int
 
     class Config:
         from_attributes = True
         populate_by_name = True
 
+class OrderBase(BaseModel):
+    user_id: int
+    ticket_id: int
+    quantity: int
+
+class OrderCreate(OrderBase):
+    pass
+
+class Order(OrderBase):
+    id: int
+    total_price: float
+    status: str
+    created_at: datetime
+    order_id: str
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
 
 # User schemas
 class UserBase(BaseModel):

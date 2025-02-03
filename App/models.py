@@ -2,6 +2,7 @@ from sqlalchemy import Column, Boolean,Integer, String, Float, ForeignKey, DateT
 from sqlalchemy.orm import relationship
 from .database import Base
 from sqlalchemy import Text
+from datetime import datetime
 from enum import Enum as PyEnum  # Use Python's Enum
 
 class Artist(Base):
@@ -42,16 +43,45 @@ class Schedule(Base):
     class Config:
         extra = "allow"
 
+# class Ticket(Base):
+#     __tablename__ = "tickets"
+
+#     id = Column(Integer, primary_key=True, index=True)
+#     type = Column(String)
+#     price = Column(Float)
+#     quantity = Column(Integer)
+
+#     class Config:
+#         extra = "allow"
+
+
 class Ticket(Base):
     __tablename__ = "tickets"
 
     id = Column(Integer, primary_key=True, index=True)
     type = Column(String)
-    price = Column(Float)
-    quantity = Column(Integer)
+    price = Column(Float, nullable=False)
+    total_tickets = Column(Integer, default=100)
 
-    class Config:
-        extra = "allow"
+class OrderStatus(str, Enum):
+    PENDING = "pending"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    ticket_id = Column(Integer, ForeignKey("tickets.id"))
+    quantity = Column(Integer, nullable=False)
+    total_price = Column(Float, nullable=False)
+    status = Column(String, default=OrderStatus.PENDING)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    order_id = Column(String, index=True)  # Store the PayPal order ID as a string
+
+    user = relationship("User")
+    ticket = relationship("Ticket")
 
 # Define user roles
 class UserRole(str, PyEnum):

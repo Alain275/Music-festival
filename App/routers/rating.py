@@ -16,23 +16,24 @@ def generate_feedback(score: int) -> str:
         return "Thanks for your rating! We’ll strive to do better next time."
     else:
         return "Sorry to hear that! We’ll try to improve next time."
+from sqlalchemy.exc import SQLAlchemyError
 
-# POST: Submit a Rating and provide feedback
 @router.post("/artists/{artist_id}/rate", response_model=RatingBase)
 def rate_artist(artist_id: int, rating_data: RatingCreate, db: Session = Depends(get_db)):
-    feedback = generate_feedback(rating_data.score)
-
-    rating = Rating(
-        artist_id=artist_id,
-        score=rating_data.score,
-        feedback=feedback
-    )
-    
-    db.add(rating)
-    db.commit()
-    db.refresh(rating)
-
-    return rating  # Return the model directly instead of dict
+    try:
+        feedback = generate_feedback(rating_data.score)
+        rating = Rating(
+            artist_id=artist_id,
+            score=rating_data.score,
+            feedback=feedback
+        )
+        db.add(rating)
+        db.commit()
+        db.refresh(rating)
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Database error occurred.")
+    return rating
 
 # GET: Get all ratings for a specific artist, with sorting and filtering
 @router.get("/artists/{artist_id}/ratings", response_model=List[RatingBase])
