@@ -5,7 +5,7 @@ from typing import List
 
 router = APIRouter()
 
-@router.post("/artists/", response_model=schemas.Artist)
+@router.post("/", response_model=schemas.Artist)
 def create_artist(artist: schemas.ArtistCreate, db: Session = Depends(database.get_db)):
     return crud.create_artist(db=db, artist=artist)
 
