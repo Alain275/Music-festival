@@ -7,7 +7,7 @@ from ..database import engine
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 
-@router.get("/health")
+@router.get("/")
 async def health_check():
     try:
         with engine.connect() as connection:

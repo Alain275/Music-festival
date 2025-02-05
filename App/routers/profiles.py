@@ -5,7 +5,7 @@ from .. import schemas, models, database
 router = APIRouter()
 
 # Get a user's profile
-@router.get("/profiles/{user_id}", response_model=schemas.Profile)
+@router.get("/{user_id}", response_model=schemas.Profile)
 async def read_profile(user_id: int, db: Session = Depends(database.get_db)):
     profile = db.query(models.Profile).filter(models.Profile.user_id == user_id).first()
     if not profile:
@@ -13,7 +13,7 @@ async def read_profile(user_id: int, db: Session = Depends(database.get_db)):
     return profile
 
 # Update a user's profile
-@router.put("/profiles/{user_id}", response_model=schemas.Profile)
+@router.put("/{user_id}", response_model=schemas.Profile)
 async def update_profile(user_id: int, profile_update: schemas.ProfileCreate, db: Session = Depends(database.get_db)):
     profile = db.query(models.Profile).filter(models.Profile.user_id == user_id).first()
     if not profile:

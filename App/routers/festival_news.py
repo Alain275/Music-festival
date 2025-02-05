@@ -9,7 +9,7 @@ import time
 router = APIRouter()
 
 # POST: Create new festival news
-@router.post("/news", response_model=FestivalNewsBase)
+@router.post("/", response_model=FestivalNewsBase)
 def create_festival_news(news_data: FestivalNewsCreate, db: Session = Depends(get_db)):
     news = FestivalNews(
         title=news_data.title,
@@ -24,7 +24,7 @@ def create_festival_news(news_data: FestivalNewsCreate, db: Session = Depends(ge
     return news
 
 # GET: Get all festival news
-@router.get("/news", response_model=List[FestivalNewsBase])
+@router.get("/", response_model=List[FestivalNewsBase])
 def get_festival_news(db: Session = Depends(get_db)):
     news = db.query(FestivalNews).all()
     
@@ -34,7 +34,7 @@ def get_festival_news(db: Session = Depends(get_db)):
     return news
 
 # GET: Get specific festival news by ID
-@router.get("/news/{news_id}", response_model=FestivalNewsBase)
+@router.get("/{news_id}", response_model=FestivalNewsBase)
 def get_festival_news_by_id(news_id: int, db: Session = Depends(get_db)):
     news = db.query(FestivalNews).filter(FestivalNews.id == news_id).first()
 
@@ -44,7 +44,7 @@ def get_festival_news_by_id(news_id: int, db: Session = Depends(get_db)):
     return news
 
 # PUT: Update existing festival news
-@router.put("/news/{news_id}", response_model=FestivalNewsBase)
+@router.put("/{news_id}", response_model=FestivalNewsBase)
 def update_festival_news(news_id: int, news_data: FestivalNewsUpdate, db: Session = Depends(get_db)):
     news = db.query(FestivalNews).filter(FestivalNews.id == news_id).first()
 
@@ -62,7 +62,7 @@ def update_festival_news(news_id: int, news_data: FestivalNewsUpdate, db: Sessio
     return news
 
 # DELETE: Delete festival news
-@router.delete("/news/{news_id}")
+@router.delete("/{news_id}")
 def delete_festival_news(news_id: int, db: Session = Depends(get_db)):
     news = db.query(FestivalNews).filter(FestivalNews.id == news_id).first()
 

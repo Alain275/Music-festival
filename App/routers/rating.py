@@ -89,7 +89,7 @@ def update_rating(
     return rating
 
 # DELETE: Delete a rating for an artist
-@router.delete("/artists/{artist_id}/ratings/{rating_id}")
+@router.delete("/{artist_id}/ratings/{rating_id}")
 def delete_rating(artist_id: int, rating_id: int, db: Session = Depends(get_db)):
     rating = db.query(Rating).filter(Rating.id == rating_id, Rating.artist_id == artist_id).first()
     
@@ -102,7 +102,7 @@ def delete_rating(artist_id: int, rating_id: int, db: Session = Depends(get_db))
     return {"message": "Rating deleted successfully"}
 
 # GET: Get a specific rating for an artist
-@router.get("/artists/{artist_id}/ratings/{rating_id}", response_model=RatingBase)
+@router.get("/{artist_id}/ratings/{rating_id}", response_model=RatingBase)
 def get_rating(artist_id: int, rating_id: int, db: Session = Depends(get_db)):
     rating = db.query(Rating).filter(Rating.id == rating_id, Rating.artist_id == artist_id).first()
     

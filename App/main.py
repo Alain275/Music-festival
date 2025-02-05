@@ -38,6 +38,14 @@ from fastapi.responses import RedirectResponse
 
 app = FastAPI()
 
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "https://your-frontend.com"],  # Add your frontend URLs
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 
 models.Base.metadata.create_all(bind=engine)
 
